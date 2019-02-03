@@ -23,7 +23,8 @@ PEData::PEData(string exePath) :exePath(exePath) {
 	ntFHeader = &(ntHeader->FileHeader);
 	ntOHeader = &(ntHeader->OptionalHeader);
 	secHeader = reinterpret_cast<PIMAGE_SECTION_HEADER>(reinterpret_cast<PUCHAR>(ntOHeader) + ntFHeader->SizeOfOptionalHeader);
-	iidArr = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(rvaToRaw(reinterpret_cast<UINT>(uFileMap + ntOHeader->DataDirectory[1].VirtualAddress)) + reinterpret_cast<UINT>(dosHeader));
+	iidArr = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(rvaToRaw(ntOHeader->DataDirectory[1].VirtualAddress) + reinterpret_cast<UINT>(dosHeader));
+
 };
 
 const string PEData::toString() {
@@ -40,7 +41,7 @@ const string PEData::toString() {
 	ss << "Section Alignment" << ntOHeader->SectionAlignment << "\r\n";
 	ss << "DataDirectory個数：" << ntOHeader->NumberOfRvaAndSizes << "\r\n\r\n";
 	ss << "IAT 情報：" << "\r\n";
-
+	ss << reinterpret_cast<char*>(rvaToRaw(iidArr->Name) + reinterpret_cast<UINT>(dosHeader)) << "\r\n";
 	return ss.str();
 }
 
@@ -56,6 +57,7 @@ PEData::~PEData() {
 
 // ファイルオフセットを取得する
 UINT PEData::rvaToRaw(UINT rva) {
+	rva = rva + reinterpret_cast<UINT>(dosHeader);
 	for (int i = 0; i < ntFHeader->NumberOfSections; i++) {
 		UINT secHeaderAddress = reinterpret_cast<UINT>(dosHeader) + (secHeader + i)->VirtualAddress;
 		UINT secHeaderAddressEnd = secHeaderAddress + (secHeader + i)->SizeOfRawData;

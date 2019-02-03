@@ -12,7 +12,7 @@ string peDataStr;
 LRESULT CALLBACK Winproc(HWND handle, UINT msg, WPARAM parm1, LPARAM parm2);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
-	WindowSupport windowsupport(string("test"), hInstance, Winproc, LoadIcon(hInstance, reinterpret_cast<LPCWSTR>(101)), 500, 500, iCmdShow);
+	WindowSupport windowsupport(string("test"), hInstance, Winproc, LoadIcon(hInstance, reinterpret_cast<LPCSTR>(101)), 500, 500, iCmdShow);
 	PEData pedata(string("d:\\software\\Ñ¸À×x\\program\\thunderstart.exe"));
 	peDataStr = pedata.toString();
 	windowsupport.showWindow();
